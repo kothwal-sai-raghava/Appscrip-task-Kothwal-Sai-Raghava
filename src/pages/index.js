@@ -6,11 +6,27 @@ import Footer from "@/components/Footer";
 
 
 export async function getServerSideProps() {
-  const res = await fetch("https://fakestoreapi.com/products");
-  const products = await res.json();
+  try {
+    const res = await fetch("https://fakestoreapi.com/products");
 
-  return { props: { products } };
+    if (!res.ok) {
+      throw new Error(`API error: ${res.status}`);
+    }
+
+    const products = await res.json();
+
+    return {
+      props: { products },
+    };
+  } catch (error) {
+    console.error("SSR fetch failed:", error.message);
+
+    return {
+      props: { products: [] }, // safe fallback
+    };
+  }
 }
+
 
 export default function Home({ products }) {
   return (
