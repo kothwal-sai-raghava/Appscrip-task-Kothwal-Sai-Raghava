@@ -355,3 +355,13 @@ body {
   color: #777;
 }
 
+.contentArea {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.products {
+  flex: 1;          
+  min-width: 0;     
+}
