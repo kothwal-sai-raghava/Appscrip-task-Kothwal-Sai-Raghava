@@ -8,14 +8,14 @@ export async function getServerSideProps() {
     const res = await fetch("https://fakestoreapi.com/products", {
       method: 'GET',
       headers: {
-        // This makes the request look like it's coming from a Chrome browser
+        
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36",
         "Accept": "application/json",
       },
     });
 
     if (!res.ok) {
-      // This will now log the specific 403 error in Vercel so you can see it
+      
       console.error(`API Error: ${res.status} ${res.statusText}`);
       return { props: { products: [] } };
     }
