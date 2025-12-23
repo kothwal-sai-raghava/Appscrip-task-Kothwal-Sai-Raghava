@@ -5,27 +5,28 @@ import Footer from "@/components/Footer";
 
 export async function getServerSideProps() {
   try {
-    // Adding a timeout or specific headers can help with production fetches
     const res = await fetch("https://fakestoreapi.com/products", {
       method: 'GET',
       headers: {
-        'Accept': 'application/json',
+        // This makes the request look like it's coming from a Chrome browser
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36",
+        "Accept": "application/json",
       },
     });
 
     if (!res.ok) {
-      console.error(`Vercel Fetch Error: ${res.status}`);
+      // This will now log the specific 403 error in Vercel so you can see it
+      console.error(`API Error: ${res.status} ${res.statusText}`);
       return { props: { products: [] } };
     }
 
     const products = await res.json();
-    return { props: { products: products || [] } };
+    return { props: { products } };
   } catch (error) {
-    console.error("Vercel Deployment Fetch Failed:", error.message);
+    console.error("Fetch failed:", error.message);
     return { props: { products: [] } };
   }
 }
-
 
 export default function Home({ products }) {
   return (
