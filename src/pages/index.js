@@ -5,21 +5,26 @@ import Footer from "@/components/Footer";
 
 export async function getServerSideProps() {
   try {
-    const res = await fetch("https://fakestoreapi.com/products");
+    // Adding a timeout or specific headers can help with production fetches
+    const res = await fetch("https://fakestoreapi.com/products", {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+      },
+    });
 
-    if (!res.ok) throw new Error(`API error: ${res.status}`);
+    if (!res.ok) {
+      console.error(`Vercel Fetch Error: ${res.status}`);
+      return { props: { products: [] } };
+    }
 
     const products = await res.json();
-
-    console.log("SSR products:", products.length); // <-- add this
-
-    return { props: { products } };
+    return { props: { products: products || [] } };
   } catch (error) {
-    console.error("SSR fetch failed:", error.message);
+    console.error("Vercel Deployment Fetch Failed:", error.message);
     return { props: { products: [] } };
   }
 }
-
 
 
 export default function Home({ products }) {
@@ -65,7 +70,7 @@ export default function Home({ products }) {
 
         <section className="toolbar">
           <div className="toolbarLeft">
-            <span>3425 Items</span>
+            <span>{products.length} Items</span>
             <button className="filterToggle">Hide Filter</button>
           </div>
 
