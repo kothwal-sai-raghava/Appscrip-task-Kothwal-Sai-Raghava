@@ -5,25 +5,23 @@ import Footer from "@/components/Footer";
 
 export async function getServerSideProps() {
   try {
-    const res = await fetch("https://fakestoreapi.com/products", {
-      method: 'GET',
-      headers: {
-        
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36",
-        "Accept": "application/json",
-      },
-    });
+    // DummyJSON is much more reliable for Vercel SSR deployments
+    const res = await fetch("https://dummyjson.com/products?limit=20");
 
-    if (!res.ok) {
-      
-      console.error(`API Error: ${res.status} ${res.statusText}`);
-      return { props: { products: [] } };
-    }
+    if (!res.ok) throw new Error(`API error: ${res.status}`);
 
-    const products = await res.json();
+    const data = await res.json();
+
+    const products = data.products.map(item => ({
+      id: item.id,
+      title: item.title,
+      price: item.price,
+      image: item.thumbnail,
+    }));
+
     return { props: { products } };
   } catch (error) {
-    console.error("Fetch failed:", error.message);
+    console.error("SSR fetch failed:", error.message);
     return { props: { products: [] } };
   }
 }
@@ -47,7 +45,12 @@ export default function Home({ products }) {
               "@context": "https://schema.org",
               "@type": "ItemList",
               "name": "Product Listing Page",
-              "itemListElement": []
+              "itemListElement": products.map((p, i) => ({
+                "@type": "ListItem",
+                "position": i + 1,
+                "url": `https://your-vercel-link.com/product/${p.id}`,
+                "name": p.title
+              }))
             })
           }}
         />
